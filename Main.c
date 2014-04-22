@@ -47,7 +47,6 @@ main(void)
 	int pushItCodes[10];
 	int loserCodes[10];
 	int dead;
-	int numberOfTurns = 4;
 	
 	int jj; 						// number of turns counter
 	int ii;   					//for counter variable
@@ -67,7 +66,7 @@ main(void)
 	int inputRequested = 0;
 	int inputSelected = 0;
 	int ATWCCW = 1; // 0 = false, 1 = true
-	
+	int numberOfTurns = 4;
 								
 	//Initializing the LEDBAR, RGB LED, DIPSwitches and Pushbuttons, and a wait timer
 	LEDBARInit();
@@ -246,14 +245,23 @@ main(void)
 						loserMsg =  loserCodes[ii];
 						RIT128x96x4StringDraw(convert(loserMsg), xx + 6*ii,yy,15);
 					}
-					break;
+
 			}
 					
 				//RESET VALUES
 				isInput = 0;
 				inputSelected = 0;
 				} //end for-loop number of turns
+		
+				
+				
+				
+				
+				
+				
 			}//end while(not dead)
+			
+			
 			
 			
 			// send activation signal to next board here??
