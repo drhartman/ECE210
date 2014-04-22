@@ -47,6 +47,9 @@ main(void)
 	int pushItCodes[10];
 	int loserCodes[10];
 	int dead;
+	int waitTimer = 0;
+	int waitCounter = 0;
+	int waitLimit = 100;
 	
 	int jj; 						// number of turns counter
 	int ii;   					//for counter variable
@@ -130,6 +133,7 @@ main(void)
 	yy = 0;
 	while(1){
 	
+		
   while(dead == 0){
 		
 		for(jj = 0 ; jj<numberOfTurns ; jj++)
@@ -203,7 +207,6 @@ main(void)
 						ATWCCW = 1;
 					}
 				}
-				
 				//Did a switch change?
 				
 				//Was a button pushed?
@@ -213,8 +216,19 @@ main(void)
 					isInput = 1;
 				}
 				
+				//Are we over the time limit
+				if(waitTimer > waitLimit){
+					dead = 1;
+					isInput = 1;
+					inputSelected = 0;
+				}
+				
+				waitTimer = waitTimer + 1;
+				sysTickWait1mS(10);
+				
 			}//end while(no input)
-			
+			waitTimer = 0;
+			RIT128x96x4Clear();
 			
 			// Was the input correct?
 			if (inputSelected == inputRequested)
@@ -245,20 +259,21 @@ main(void)
 						loserMsg =  loserCodes[ii];
 						RIT128x96x4StringDraw(convert(loserMsg), xx + 6*ii,yy,15);
 					}
-
-			}
+					break;
+				}
 					
 				//RESET VALUES
 				isInput = 0;
 				inputSelected = 0;
-				} //end for-loop number of turns
+				
+			} //end for-loop number of turns
 		
 				
 				
 				
 				
 				
-				
+				turnOn('B'); //meaning its time to pass
 			}//end while(not dead)
 			
 			
