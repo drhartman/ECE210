@@ -45,14 +45,19 @@ main(void)
 	int turnItCodes[10];
 	int correctcode[10];
 	int pushItCodes[10];
+	int loserCodes[10];
+	int dead;
+	int numberOfTurns = 4;
 	
+	int jj; 						// number of turns counter
 	int ii;   					//for counter variable
 	int xx;							//x axis string position
 	int yy;							//y axis string position
 	
-	int turnIt;		//holds 'Turn It' message
-	int correct;	// holds 'Correct' message
-	int pushIt;	//  holds 'Push it" message
+	int turnItMsg;		//holds 'Turn It' message
+	int correctMsg;	// holds 'Correct' message
+	int pushItMsg;	//  holds 'Push it" message
+	int loserMsg; //holds "you lose' message
 	
 	// used to read current values
 	int potenValue0 = 0;
@@ -102,10 +107,21 @@ main(void)
 	pushItCodes[5] = 6;	// I
 	pushItCodes[6] = 16;	// T 	
 	
+	// code for 'You Lose'
+	loserCodes[0] = 21;	//Y
+	loserCodes[1] = 24;	//O
+	loserCodes[2] = 7;	//U
+	loserCodes[3] = 4;	//
+	loserCodes[4] = 18; //L
+	loserCodes[5] = 24;	//O
+	loserCodes[6] = 5;	//S
+	loserCodes[7] = 1;	//E
+	
 	//Flash to say we are getting ready to go!
 	turnOn('B');
 	sysTickWait1mS(250);
 	turnOff('B');
+
 
 	//Clear messages on the screen
 	RIT128x96x4Clear();
@@ -113,9 +129,12 @@ main(void)
 	//Start at the upper left hand corner of the screen!
 	xx = 0;
 	yy = 0;
+	while(1){
 	
-  while(1){
+  while(dead == 0){
 		
+		for(jj = 0 ; jj<numberOfTurns ; jj++)
+		{
 		// Assign inputRequest - 1: button,  2: switch, 3: knob 
 		int randomNum = rand() % 3;	// generates a number between 0-3
 		
@@ -139,8 +158,8 @@ main(void)
 			//Display 'Push it'
 			for(ii = 0; ii < 7;ii++)
 			{
-				pushIt = pushItCodes[ii];
-				RIT128x96x4StringDraw(convert(pushIt), xx + 6*ii,yy,15);
+				pushItMsg = pushItCodes[ii];
+				RIT128x96x4StringDraw(convert(pushItMsg), xx + 6*ii,yy,15);
 			}
 		} else if (inputRequested == 2)
 		{
@@ -150,8 +169,8 @@ main(void)
 			//Display 'Turn it'
 			for(ii = 0; ii < 7;ii++)
 			{
-				turnIt = turnItCodes[ii];
-				RIT128x96x4StringDraw(convert(turnIt), xx + 6*ii,yy,15);
+				turnItMsg = turnItCodes[ii];
+				RIT128x96x4StringDraw(convert(turnItMsg), xx + 6*ii,yy,15);
 			}
 		}
 		
@@ -159,10 +178,12 @@ main(void)
 			while (isInput == 0)	// loop until an input is detected
 			{
 
+
 				// record values of inputs here
 				potenValue0 = readPotentiometer0();				  // knob value
 				pushButton1 = read_PBSwitchNum(1);		// push button
 																								  	// switch
+
 
 				// Did the knob change?
 				if (ATWCCW == 1)
@@ -208,8 +229,8 @@ main(void)
 					//Letters are displayed left to right
 					for(ii = 0; ii < 7;ii++)
 					{
-						correct = correctcode[ii];
-						RIT128x96x4StringDraw(convert(correct), xx + 6*ii,yy,15);
+						correctMsg = correctcode[ii];
+						RIT128x96x4StringDraw(convert(correctMsg), xx + 6*ii,yy,15);
 					}
 				sysTickWait1mS(1000);
 			}
@@ -219,19 +240,34 @@ main(void)
 					turnOn('R');
 					sysTickWait1mS(250);
 					turnOff('R');
+					dead = 1;
+					for(ii = 0 ; ii<8 ; ii++)
+					{
+						loserMsg =  loserCodes[ii];
+						RIT128x96x4StringDraw(convert(loserMsg), xx + 6*ii,yy,15);
+					}
+					break;
 			}
 					
-			//RESET VALUES
-			isInput = 0;
-			inputSelected = 0;
-		
-			}//end while(1)
-		
-	}
+				//RESET VALUES
+				isInput = 0;
+				inputSelected = 0;
+				} //end for-loop number of turns
+			}//end while(not dead)
+			
+			
+			// send activation signal to next board here??
+			
+			
+			
+		}//end while(1)
+	}// end main
 	
+
 
 /* The convert() function maps 5 bit Baudot codes to the output needed for 
    for the LCD Display */
+
 
 char* convert(int baudotCode)
 {
