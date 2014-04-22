@@ -28,6 +28,11 @@ void  potentiometersInit(void);
 int   readPotentiometer0(void);
 int   readPotentiometer1(void);
 int   readPotentiometer2(void);
+void    LEDBAROutput(int number);
+void    LEDBAR_TurnOn(int number);
+void    LEDBAR_TurnOff(int number);
+int   read_SwitchNum(int SwitchNum);
+int   read_Switches();
 void    sysTickWait1mS(int waitTime);
 void	RIT128x96x4Init(int freq);
 void    RIT128x96x4Clear(void); 
@@ -45,6 +50,7 @@ main(void)
 	int turnItCodes[10];
 	int correctcode[10];
 	int pushItCodes[10];
+	int switchItCodes[10];
 	
 	int ii;   					//for counter variable
 	int xx;							//x axis string position
@@ -53,15 +59,20 @@ main(void)
 	int turnIt;		//holds 'Turn It' message
 	int correct;	// holds 'Correct' message
 	int pushIt;	//  holds 'Push it" message
+	int switchIt; // holds 'Switch it' message
 	
 	// used to read current values
 	int potenValue0 = 0;
 	int pushButton1 = 1;
+	int switchButton1 = 0;
 	
 	int isInput = 0;
 	int inputRequested = 0;
 	int inputSelected = 0;
 	int ATWCCW = 1; // 0 = false, 1 = true
+	int switchON = 1; // 0 = false, 1= true
+    	int number = 0;
+    	int SwitchNum;
 	
 								
 	//Initializing the LEDBAR, RGB LED, DIPSwitches and Pushbuttons, and a wait timer
@@ -100,7 +111,18 @@ main(void)
 	pushItCodes[3] = 20;	// H
 	pushItCodes[4] = 4;	// 
 	pushItCodes[5] = 6;	// I
-	pushItCodes[6] = 16;	// T 	
+	pushItCodes[6] = 16;	// T 
+	
+	// code for 'Switch It'
+	switchItCodes[0] = 5;	// S
+	switchItCodes[1] = 19;     // W
+	switchItCodes[2] = 6;     // I
+	switchItCodes[3] = 16;	// T
+	switchItCodes[4] = 14;     // C
+	switchItCodes[5] = 20;     // H
+	switchItCodes[6] = 4;	//
+    	switchItCodes[7] = 6;	// I
+    	switchItCodes[8] = 16;	// T
 	
 	//Flash to say we are getting ready to go!
 	turnOn('B');
@@ -123,12 +145,11 @@ main(void)
 		{
 			inputRequested = 1;	// button
 		}
-		/*
-		else if (1 < randomNum <= 2)
-		{
-			inputRequested = 2;	// switch
-		} 
-		*/
+		
+         	else if (1 < randomNum <= 2)
+         	{
+             		inputRequested = 2;	// switch
+         	}
 		else if (1 < randomNum <= 3)
 		{
 			inputRequested = 3;	// knob
@@ -144,7 +165,12 @@ main(void)
 			}
 		} else if (inputRequested == 2)
 		{
-			
+			//Display 'Switch it'
+            		for(ii = 0; ii < 9;ii++)
+			{
+				switchIt = switchItCodes[ii];
+				RIT128x96x4StringDraw(convert(switchIt), xx + 6*ii,yy,15);
+			}	
 		} else if (inputRequested == 3)
 		{
 			//Display 'Turn it'
@@ -162,7 +188,7 @@ main(void)
 				// record values of inputs here
 				potenValue0 = readPotentiometer0();				  // knob value
 				pushButton1 = read_PBSwitchNum(1);		// push button
-																								  	// switch
+				switchButton1 = read_SwitchNum(SwitchNum);																				  	// switch
 
 				// Did the knob change?
 				if (ATWCCW == 1)
@@ -185,7 +211,24 @@ main(void)
 				}
 				
 				//Did a switch change?
-				
+				if (switchON == 0)
+            			{
+                			if (switchButton1 == 1)
+                			{
+                    			inputSelected = 2;
+                    			switchON = 1;
+                    			isInput = 1;
+                			}
+            			}
+            		else	//switchON
+            			{
+                		if (switchButton1 == 0)
+                			{
+                    		switchON = 0;
+                    		isInput = 1;
+                    		inputSelected = 2;
+                			}
+        		 	}
 				//Was a button pushed?
 				if (pushButton1 == 0)
 				{
