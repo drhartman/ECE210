@@ -79,9 +79,7 @@ main(void)
 	sysTickInit();
 	potentiometersInit();
 	RIT128x96x4Init(1000000);
-	 
-	/* Main Part of the Program starts here */
-	
+
 	// code for 'Turn It'
   turnItCodes[0] = 16;	// T
 	turnItCodes[1] = 7;	// U
@@ -124,13 +122,21 @@ main(void)
 	sysTickWait1mS(250);
 	turnOff('B');
 
-
 	//Clear messages on the screen
 	RIT128x96x4Clear();
 	
 	//Start at the upper left hand corner of the screen!
 	xx = 0;
 	yy = 0;
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	while(1){
 	
 		
@@ -184,7 +190,7 @@ main(void)
 
 				// record values of inputs here
 				potenValue0 = readPotentiometer0();				  // knob value
-				pushButton1 = read_PBSwitchNum(1);		// push button
+				pushButton1 = read_PBSwitchNum(1);					// push button
 																								  	// switch
 
 
