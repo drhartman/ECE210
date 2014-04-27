@@ -1,15 +1,15 @@
 //*****************************************************************************
 // TITLE:			LAB 8
 // 
-// NAME:		    David, Jim, Ruihao, Shu
+// NAME:		    <Your Name Here>
 // LAB SECTION:		<301, 302, 303, 304, 305, or 306>
-// LAB DAY:			Monday Eve
+// LAB DAY:			<Lab Day>
 //
 // CLASS:			ECE 210
 // DATE: 			FALL 2014
 // 
-// DESCRIPTION:		Bop it..... Twist it ...... Pull it
-//
+// DESCRIPTION:		<Insert a short description of what you are working on in 
+//                   in this lab>
 //*****************************************************************************
 /* Initialization Functions */
 void	LEDBARInit(void);
@@ -45,6 +45,7 @@ main(void)
 	int turnItCodes[10];
 	int correctcode[10];
 	int pushItCodes[10];
+	int switchItCodes[10];
 	int loserCodes[10];
 	int dead;
 	int waitTimer = 0;
@@ -60,16 +61,21 @@ main(void)
 	int correctMsg;	// holds 'Correct' message
 	int pushItMsg;	//  holds 'Push it" message
 	int loserMsg; //holds "you lose' message
+	int switchItMsg;
 	
 	// used to read current values
 	int potenValue0 = 0;
 	int pushButton1 = 1;
+	int switchButton1 = 0;
 	
 	int isInput = 0;
 	int inputRequested = 0;
 	int inputSelected = 0;
 	int ATWCCW = 1; // 0 = false, 1 = true
+	int switchON = 1; // 0 = false, 1= true
+	int number = 0;																//??????????????????????
 	int numberOfTurns = 4;
+	int SwitchNum;
 								
 	//Initializing the LEDBAR, RGB LED, DIPSwitches and Pushbuttons, and a wait timer
 	LEDBARInit();
@@ -88,6 +94,17 @@ main(void)
 	turnItCodes[4] = 4;	// 
 	turnItCodes[5] = 6;	// I
 	turnItCodes[6] = 16;	// T
+	
+		// code for 'Switch It'
+	switchItCodes[0] = 5;	// S
+	switchItCodes[1] = 19; // W
+	switchItCodes[2] = 6; // I
+	switchItCodes[3] = 16;	// T
+	switchItCodes[4] = 14; // C
+	switchItCodes[5] = 20; // H
+	switchItCodes[6] = 4;	//
+	switchItCodes[7] = 6;	// I
+  switchItCodes[8] = 16;	// T
 	
 	// code for 'Correct'
 	correctcode[0] = 14;	// C
@@ -144,20 +161,19 @@ main(void)
 		
 		for(jj = 0 ; jj<numberOfTurns ; jj++)
 		{
-		// Assign inputRequest - 1: button,  2: switch, 3: knob 
+		
+			// Assign inputRequest - 1: button,  2: switch, 3: knob 
 		int randomNum = rand() % 3;	// generates a number between 0-3
 		
 		if (randomNum <= 1)
 		{
 			inputRequested = 1;	// button
 		}
-		/*
 		else if (1 < randomNum <= 2)
 		{
 			inputRequested = 2;	// switch
 		} 
-		*/
-		else if (1 < randomNum <= 3)
+		else if (2 < randomNum <= 3)
 		{
 			inputRequested = 3;	// knob
 		}
@@ -172,7 +188,12 @@ main(void)
 			}
 		} else if (inputRequested == 2)
 		{
-			
+				//Display 'Switch it'
+			for(ii = 0; ii < 9;ii++)
+			{
+				switchItMsg = switchItCodes[ii];
+				RIT128x96x4StringDraw(convert(switchItMsg), xx + 6*ii,yy,15);
+			}	
 		} else if (inputRequested == 3)
 		{
 			//Display 'Turn it'
@@ -191,7 +212,7 @@ main(void)
 				// record values of inputs here
 				potenValue0 = readPotentiometer0();				  // knob value
 				pushButton1 = read_PBSwitchNum(1);					// push button
-																								  	// switch
+				switchButton1 = read_SwitchNum(SwitchNum); 	// switch
 
 
 				// Did the knob change?
@@ -213,7 +234,26 @@ main(void)
 						ATWCCW = 1;
 					}
 				}
+					
 				//Did a switch change?
+					if (switchON == 0)
+             {
+                 if (switchButton1 == 1)
+                 {
+                     inputSelected = 2;
+                     switchON = 1;
+                     isInput = 1;
+                 }
+             }
+             else	//switchON
+             {
+                 if (switchButton1 == 0)
+                 {
+                     switchON = 0;
+                     isInput = 1;
+                     inputSelected = 2;
+                 }
+         }
 				
 				//Was a button pushed?
 				if (pushButton1 == 0)
@@ -222,9 +262,9 @@ main(void)
 					isInput = 1;
 				}
 				
-				//Are we over the time limit
+				//Are we over the time limit?
 				if(waitTimer > waitLimit){
-					dead = 1;
+					dead = 1;                                     //Board Specific!!
 					isInput = 1;
 					inputSelected = 0;
 				}
@@ -259,7 +299,7 @@ main(void)
 					turnOn('R');
 					sysTickWait1mS(250);
 					turnOff('R');
-					dead = 1;
+					dead = 1; ////THIS VALUE IS BOARD SPECIFIC
 					for(ii = 0 ; ii<8 ; ii++)
 					{
 						loserMsg =  loserCodes[ii];
