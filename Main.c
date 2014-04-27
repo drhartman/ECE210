@@ -1,15 +1,15 @@
 //*****************************************************************************
 // TITLE:			LAB 8
 // 
-// NAME:		    <Your Name Here>
+// NAME:		    David, Jim, Ruihao, Shu
 // LAB SECTION:		<301, 302, 303, 304, 305, or 306>
-// LAB DAY:			<Lab Day>
+// LAB DAY:			Monday Eve
 //
 // CLASS:			ECE 210
 // DATE: 			FALL 2014
 // 
-// DESCRIPTION:		<Insert a short description of what you are working on in 
-//                   in this lab>
+// DESCRIPTION:		Bop it..... Twist it ...... Pull it
+//
 //*****************************************************************************
 /* Initialization Functions */
 void	LEDBARInit(void);
