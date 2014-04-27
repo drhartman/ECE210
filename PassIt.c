@@ -18,7 +18,7 @@ void 	Xbee_Send(int message);
 int		Xbee_Receive(void);
 void Display(int numWin);
 void    RIT128x96x4StringDraw(const char* letter, int xx, int yy, int intensity);
-char* 	convert(int baudotCode);
+char* 	convertForWin(int baudotCode);
 //*****************************************************************************
 //
 // Main Program:
@@ -147,17 +147,17 @@ main(void)
 
 
 void Display(int numWin){
-		RIT128x96x4StringDraw(convert(22), 3, 15, 15);
-		RIT128x96x4StringDraw(convert(numWin), 9, 15, 15);
-		RIT128x96x4StringDraw(convert(4), 15, 15, 15);
-		RIT128x96x4StringDraw(convert(19), 21, 15, 15);
-		RIT128x96x4StringDraw(convert(6), 27, 15, 15);
-		RIT128x96x4StringDraw(convert(12), 33, 15, 15);
-		RIT128x96x4StringDraw(convert(5), 39, 15, 15);
+		RIT128x96x4StringDraw(convertForWin(22), 3, 15, 15);
+		RIT128x96x4StringDraw(convertForWin(numWin), 9, 15, 15);
+		RIT128x96x4StringDraw(convertForWin(4), 15, 15, 15);
+		RIT128x96x4StringDraw(convertForWin(19), 21, 15, 15);
+		RIT128x96x4StringDraw(convertForWin(6), 27, 15, 15);
+		RIT128x96x4StringDraw(convertForWin(12), 33, 15, 15);
+		RIT128x96x4StringDraw(convertForWin(5), 39, 15, 15);
 		
 }
 
-char* convert(int baudotCode)
+char* convertForWin(int baudotCode)
 {
 	switch(baudotCode)
 	{
