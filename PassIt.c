@@ -1,4 +1,3 @@
-
 /* Initialization Functions */
 
 void	LEDBARInit(void);
@@ -82,13 +81,21 @@ main(void)
 	sysTickWait1mS(150);
 	
 	Xbee_Send(turn);	
-	
 	Xbee_Send(countDead);
-	
+	Xbee_Send(p1Dead);
+	Xbee_Send(p2Dead);
+	Xbee_Send(p3Dead);
+	Xbee_Send(p4Dead);
+		
 	/* Main Part of the Program starts here */
 	while (1){
 		turn = Xbee_Receive();
 		countDead = Xbee_Receive();
+		p1Dead = Xbee_Receive();
+		p2Dead = Xbee_Receive();
+		p3Dead = Xbee_Receive();
+		p4Dead = Xbee_Receive();
+		
 				
 		if(turn == 1 && countDead < 3){
 	
@@ -112,23 +119,22 @@ main(void)
 	
 		}
 		else if (countDead >= 3) {
-				switch(turn){
-						case 1 : {
-							//Display "P1 Wins!"
+				if (!p1Dead){
+						//Display "P1 Wins!"
 							Display(13);
 							break;
 						}
-						case 2 : {
+				else if (!p2Dead){
 							//Display "P2 Wins!"
 							Display(14);
 							break;
 						}
-						case 3 : {
+				else if (!p3Dead){
 							//Display "P3 Wins!"
 							Display(15);
 							break;
 						}
-						case 4 : {
+				else if (!p4Dead){
 							//Display "P4 Wins!"
 							Display(16);
 							break;
@@ -136,7 +142,7 @@ main(void)
 				}
 			}
 		}
-	}
+	
 	
 
 
