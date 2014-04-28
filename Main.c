@@ -28,6 +28,11 @@ void  potentiometersInit(void);
 int   readPotentiometer0(void);
 int   readPotentiometer1(void);
 int   readPotentiometer2(void);
+void    LEDBAROutput(int number);
+void    LEDBAR_TurnOn(int number);
+void    LEDBAR_TurnOff(int number);
+int   read_SwitchNum(int SwitchNum);
+int   read_Switches();
 void    sysTickWait1mS(int waitTime);
 void	RIT128x96x4Init(int freq);
 void    RIT128x96x4Clear(void); 
@@ -45,25 +50,35 @@ main(void)
 	int turnItCodes[10];
 	int correctcode[10];
 	int pushItCodes[10];
-	
+	int switchItCodes[10];
+	int loserCodes[10];
+
 	int ii;   					//for counter variable
 	int xx;							//x axis string position
 	int yy;							//y axis string position
-	
+
 	int turnIt;		//holds 'Turn It' message
 	int correct;	// holds 'Correct' message
 	int pushIt;	//  holds 'Push it" message
+	int switchIt; // holds 'Switch it' message
+	int loserMsg; //holds "you lose' message
 	
+	int dead;
+
 	// used to read current values
 	int potenValue0 = 0;
 	int pushButton1 = 1;
-	
+	int switchButton1 = 0;
+
 	int isInput = 0;
 	int inputRequested = 0;
 	int inputSelected = 0;
 	int ATWCCW = 1; // 0 = false, 1 = true
-	
-								
+	int switchON = 1; // 0 = false, 1= true
+  int number = 0;
+  int SwitchNum = 4;
+
+
 	//Initializing the LEDBAR, RGB LED, DIPSwitches and Pushbuttons, and a wait timer
 	LEDBARInit();
 	DIPSWInit();
@@ -72,9 +87,9 @@ main(void)
 	sysTickInit();
 	potentiometersInit();
 	RIT128x96x4Init(1000000);
-	 
+
 	/* Main Part of the Program starts here */
-	
+
 	// code for 'Turn It'
   turnItCodes[0] = 16;	// T
 	turnItCodes[1] = 7;	// U
@@ -83,7 +98,7 @@ main(void)
 	turnItCodes[4] = 4;	// 
 	turnItCodes[5] = 6;	// I
 	turnItCodes[6] = 16;	// T
-	
+
 	// code for 'Correct'
 	correctcode[0] = 14;	// C
 	correctcode[1] = 24;	// O
@@ -92,7 +107,7 @@ main(void)
 	correctcode[4] = 1;	// E
 	correctcode[5] = 14;	// C
 	correctcode[6] = 16;	// T 
-	
+
 	// code for 'Push It'
 	pushItCodes[0] = 22;	// P
 	pushItCodes[1] = 7;	// U
@@ -100,40 +115,64 @@ main(void)
 	pushItCodes[3] = 20;	// H
 	pushItCodes[4] = 4;	// 
 	pushItCodes[5] = 6;	// I
-	pushItCodes[6] = 16;	// T 	
+	pushItCodes[6] = 16;	// T 
+
+	// code for 'Switch It'
+	switchItCodes[0] = 5;	// S
+	switchItCodes[1] = 19;  // W
+	switchItCodes[2] = 6;   // I
+	switchItCodes[3] = 16;	// T
+	switchItCodes[4] = 14;  // C
+	switchItCodes[5] = 20;  // H
+	switchItCodes[6] = 4;	//
+	switchItCodes[7] = 6;	// I
+ 	switchItCodes[8] = 16;	// T
 	
-	//Flash to say we are getting ready to go!
+	// code for 'You Lose'
+	loserCodes[0] = 21;	//Y
+	loserCodes[1] = 24;	//O
+	loserCodes[2] = 7;	//U
+	loserCodes[3] = 4;	//
+	loserCodes[4] = 18;     //L
+	loserCodes[5] = 24;	//O
+	loserCodes[6] = 5;	//S
+	loserCodes[7] = 1;	//E
+
+	//Flash twice to say we are getting ready to go!
+	turnOn('B');
+	sysTickWait1mS(250);
+	turnOff('B');
 	turnOn('B');
 	sysTickWait1mS(250);
 	turnOff('B');
 
 	//Clear messages on the screen
 	RIT128x96x4Clear();
-	
+
 	//Start at the upper left hand corner of the screen!
 	xx = 0;
 	yy = 0;
-	
+
+	//(unsigned int) srand(time(NULL)); // set new seed?
+
   while(1){
-		
+
 		// Assign inputRequest - 1: button,  2: switch, 3: knob 
 		int randomNum = rand() % 3;	// generates a number between 0-3
-		
+
 		if (randomNum <= 1)
 		{
 			inputRequested = 1;	// button
 		}
-		/*
-		else if (1 < randomNum <= 2)
-		{
+    else if (1 < randomNum <= 2)
+    {
 			inputRequested = 2;	// switch
-		} 
-		*/
-		else if (1 < randomNum <= 3)
+    }
+		else if (2 < randomNum <= 3)
 		{
 			inputRequested = 3;	// knob
 		}
-		
+
 		if (inputRequested == 1)
 		{
 			//Display 'Push it'
@@ -144,7 +183,12 @@ main(void)
 			}
 		} else if (inputRequested == 2)
 		{
-			
+			//Display 'Switch it'
+            		for(ii = 0; ii < 9;ii++)
+			{
+				switchIt = switchItCodes[ii];
+				RIT128x96x4StringDraw(convert(switchIt), xx + 6*ii,yy,15);
+			}	
 		} else if (inputRequested == 3)
 		{
 			//Display 'Turn it'
@@ -154,15 +198,15 @@ main(void)
 				RIT128x96x4StringDraw(convert(turnIt), xx + 6*ii,yy,15);
 			}
 		}
-		
+
       
 			while (isInput == 0)	// loop until an input is detected
 			{
 
 				// record values of inputs here
 				potenValue0 = readPotentiometer0();				  // knob value
-				pushButton1 = read_PBSwitchNum(1);		// push button
-																								  	// switch
+				pushButton1 = read_PBSwitchNum(1);					// push button
+				switchButton1 = read_SwitchNum(SwitchNum);
 
 				// Did the knob change?
 				if (ATWCCW == 1)
@@ -183,19 +227,33 @@ main(void)
 						ATWCCW = 1;
 					}
 				}
-				
+
 				//Did a switch change?
-				
+				if (switchON == 0) // switchOn holds last switch value 
+        {
+          if (switchButton1 == 1)
+					{
+						inputSelected = 2;
+						switchON = 1;
+						isInput = 1;
+					}
+        } else if (switchButton1 == 0) 	//switchON
+          {
+             switchON = 0;
+             isInput = 1;
+             inputSelected = 2;
+          }
+        		 	
 				//Was a button pushed?
 				if (pushButton1 == 0)
 				{
 					inputSelected = 1;
 					isInput = 1;
 				}
-				
+
 			}//end while(no input)
-			
-			
+
+
 			// Was the input correct?
 			if (inputSelected == inputRequested)
 			{
@@ -203,6 +261,12 @@ main(void)
 					turnOn('G');
 					sysTickWait1mS(250);
 					turnOff('G');
+					turnOn('G');
+					sysTickWait1mS(250);
+					turnOff('G');
+
+					//Clear messages on the screen
+					RIT128x96x4Clear();
 				
 					// Display 'correct'
 					//Letters are displayed left to right
@@ -212,6 +276,9 @@ main(void)
 						RIT128x96x4StringDraw(convert(correct), xx + 6*ii,yy,15);
 					}
 				sysTickWait1mS(1000);
+					
+				//Clear messages on the screen
+				RIT128x96x4Clear();
 			}
 			else
 			{
@@ -219,16 +286,29 @@ main(void)
 					turnOn('R');
 					sysTickWait1mS(250);
 					turnOff('R');
+					turnOn('R');
+					sysTickWait1mS(250);
+					turnOff('R');
+				
+				  //Clear messages on the screen
+					RIT128x96x4Clear();
+				
+					dead = 1; ////THIS VALUE IS BOARD SPECIFIC
+					for(ii = 0 ; ii<8 ; ii++)
+					{
+						loserMsg =  loserCodes[ii];
+						RIT128x96x4StringDraw(convert(loserMsg), xx + 6*ii,yy,15);
+					}
 			}
-					
+
 			//RESET VALUES
 			isInput = 0;
 			inputSelected = 0;
-		
+
 			}//end while(1)
-		
+
 	}
-	
+
 
 /* The convert() function maps 5 bit Baudot codes to the output needed for 
    for the LCD Display */
