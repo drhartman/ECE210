@@ -1,4 +1,3 @@
-
 /* Initialization Functions */
 
 void	LEDBARInit(void);
@@ -28,8 +27,10 @@ void  sysTickWait1mS(int waitTime);
 
 /* Xbee Functions */
 void 	Xbee_ConfigureAddresses(int destination, int ownAddr);
-void 	Xbee_Send(int message);
-int		Xbee_Receive(void);
+void Xbee_SendArray(char * s, int messageLength);
+int Xbee_ReceiveArray(char * t, int messageLength);
+
+/*Display Configurations*/
 void 	Display(int numWin);
 void  RIT128x96x4StringDraw(const char* letter, int xx, int yy, int intensity);
 
@@ -63,6 +64,9 @@ main(void)
 	int p4DeadPrev;		//Contains prev value of p4Dead
 	int currAdd;
 	int nxtAdd;
+	char messageReceived[5];
+	char sendMessage[5];
+	int errorCode;
 	int countDead = 0;
 	int turnItCodes[10];
 	int correctcode[10];
@@ -187,43 +191,28 @@ main(void)
 	turnOff('B');
 	sysTickWait1mS(150);
 	
-	Xbee_Send(turn);	
-	Xbee_Send(countDead);
-	Xbee_Send(p1Dead);
-	Xbee_Send(p2Dead);
-	Xbee_Send(p3Dead);
-	Xbee_Send(p4Dead);
+	sendMessage[0] = (char) (p1Dead + 48);
+	sendMessage[1] = (char) (p2Dead + 48);
+	sendMessage[2] = (char) (p3Dead + 48);
+	sendMessage[3] = (char) (p4Dead + 48);
+	sendMessage[4] = (char) (turn + 48);
+	
+	Xbee_SendArray(sendMessage, 5);
 		
 	/* Main Part of the Program starts here */
 	while (1){
-		turn = Xbee_Receive();
-		countDead = Xbee_Receive();
+		errorCode =  Xbee_ReceiveArray(messageReceived, 5);
 		
-		p1DeadPrev = p1Dead;
-		p1Dead = Xbee_Receive();
-		if (p1Dead == 0x5A5){			//prevents the error code from being assigned to p1Dead
-			p1Dead = p1DeadPrev;
+		if (errorCode != 0x5A5){
+			
+			p1Dead = (int) messageReceived[0] - (int) '0';
+			p2Dead = (int) messageReceived[1] - (int) '0';
+			p3Dead = (int) messageReceived[2] - (int) '0';
+			p4Dead = (int) messageReceived[3] - (int) '0';
+			turn = (int) messageReceived[4] - (int) '0';
 		}
+		countDead = p1Dead + p2Dead + p3Dead + p4Dead;
 		
-		p2DeadPrev = p2Dead;
-		p2Dead = Xbee_Receive();
-		if (p2Dead == 0x5A5){			//prevents the error code from being assigned to p2Dead
-			p2Dead = p2DeadPrev;
-		}
-		
-		p3DeadPrev = p3Dead;
-		p3Dead = Xbee_Receive();	//prevents the error code from being assigned to p3Dead
-		if (p3Dead == 0x5A5){
-			p3Dead = p3DeadPrev;
-		}
-		
-		p4DeadPrev = p4Dead;
-		p2Dead = Xbee_Receive();	//prevents the error code from being assigned to p4Dead
-		if (p4Dead == 0x5A5){
-			p4Dead = p4DeadPrev;
-		}
-		
-				
 		if(turn == 1 && countDead < 3){												//turn is board specific
 	
 			turnOn('G');
@@ -402,22 +391,18 @@ main(void)
 			} //end for-loop number of turns
 
 				turnOn('B'); //meaning its time to pass
-			}//end while(not p1Dead)
+		}//end while(not p1Dead)
 			
 			//Finish turn
 			
-			countDead = p1Dead + p2Dead + p3Dead + p4Dead;
+			sendMessage[0] = (char) (p1Dead + 48);
+			sendMessage[1] = (char) (p2Dead + 48);
+			sendMessage[2] = (char) (p3Dead + 48);
+			sendMessage[3] = (char) (p4Dead + 48);
+			sendMessage[4] = (char) (turn + 48);
 	
-			//Send turn
-			Xbee_Send(turn);
-	
-			//Send num dead
-			Xbee_Send(countDead);
-			Xbee_Send(p1Dead);
-			Xbee_Send(p2Dead);
-			Xbee_Send(p3Dead);
-			Xbee_Send(p4Dead);
-	
+			Xbee_SendArray(sendMessage, 5);//Send Array to next board
+				
 		}
 		else if (countDead >= 3) {
 				if (!p1Dead){
