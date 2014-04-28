@@ -73,16 +73,29 @@ main(void)
 
 	// used to read current values
 	int potenValue0 = 0;
+	int potenValue1 = 0;
+	int potenValue2 = 0;
 	int pushButton1 = 1;
+	int pushButton2 = 1;
+	int pushButton3 = 1;
+	int switchButton0 = 0;
 	int switchButton1 = 0;
+	int switchButton2 = 0;
+	int switchButton3 = 0;
+	int switchButton4 = 0;
 
 	int isInput = 0;
 	int inputRequested = 0;
 	int inputSelected = 0;
-	int ATWCCW = 1; // 0 = false, 1 = true
-	int switchON = 0; // 0 = false, 1= true
+	int ATWCCW0 = 1; // 0 = false, 1 = true
+	int ATWCCW1 = 1; // 0 = false, 1 = true
+	int ATWCCW2 = 1; // 0 = false, 1 = true
+	int switchON0 = 0; // 0 = false, 1= true
+	int switchON1 = 0; // 0 = false, 1= true
+	int switchON2 = 0; // 0 = false, 1= true
+	int switchON3 = 0; // 0 = false, 1= true
+	int switchON4 = 0; // 0 = false, 1= true
   int number = 0;
-  int SwitchNum = 4;
 	
 	// timer variables
 	int waitTimer = 0;
@@ -242,39 +255,142 @@ main(void)
 			{
 
 				// record values of inputs here
-				potenValue0 = readPotentiometer0();				  // knob value
-				pushButton1 = read_PBSwitchNum(1);					// push button
-				switchButton1 = read_SwitchNum(SwitchNum);  // switch number
+				// knob values
+				potenValue0 = readPotentiometer0();				 
+				potenValue1 = readPotentiometer1();				  
+				potenValue2 = readPotentiometer2();	
+				// switches
+				switchButton0 = read_SwitchNum(0);  
+				switchButton1 = read_SwitchNum(1);  
+				switchButton2 = read_SwitchNum(2);  
+				switchButton3 = read_SwitchNum(3);  
+				switchButton4 = read_SwitchNum(4);
+	      // push buttons			  
+				pushButton1 = read_PBSwitchNum(1);
+        pushButton2 = read_PBSwitchNum(2);
+				pushButton3 = read_PBSwitchNum(3);				
+			    
+				
 				// Did the knob change?
-				if (ATWCCW == 1 && (potenValue0 >= 500))
+				// knob0
+				if (ATWCCW0 == 1 && (potenValue0 >= 500))
 				{
 						inputSelected = 3;
-						ATWCCW = 0;
+						ATWCCW0 = 0;
 						isInput = 1;
 				}
-				else if (ATWCCW == 0 && (potenValue0 <= 500)) //ATWCW
+				else if (ATWCCW0 == 0 && (potenValue0 <= 500)) //ATWCW
 				{
 					isInput = 1;
 					inputSelected = 3;
-					ATWCCW = 1;
+					ATWCCW0 = 1;
+				}
+				// knob1
+				if (ATWCCW1 == 1 && (potenValue1 >= 500))
+				{
+						inputSelected = 3;
+						ATWCCW1 = 0;
+						isInput = 1;
+				}
+				else if (ATWCCW1 == 0 && (potenValue1 <= 500)) //ATWCW
+				{
+					isInput = 1;
+					inputSelected = 3;
+					ATWCCW1 = 1;
+				}
+				// knob2
+				if (ATWCCW2 == 1 && (potenValue2 >= 500))
+				{
+						inputSelected = 3;
+						ATWCCW2 = 0;
+						isInput = 1;
+				}
+				else if (ATWCCW2 == 0 && (potenValue2 <= 500)) //ATWCW
+				{
+					isInput = 1;
+					inputSelected = 3;
+					ATWCCW2 = 1;
 				}
 				
 
 				//Did a switch change?
-				if (switchON == 0 && switchButton1 == 1) // switchOn holds last switch value 
+				// switch0
+				if (switchON0 == 0 && switchButton0 == 1) // switchOn holds last switch value 
         {
 						inputSelected = 2;
-						switchON = 1;
+						switchON0 = 1;
 						isInput = 1;
-        } else if (switchON == 1 && switchButton1 == 0) 	//switchON
+        } else if (switchON0 == 1 && switchButton0 == 0) 	//switchON
           {
-             switchON = 0;
+             switchON0 = 0;
+             isInput = 1;
+             inputSelected = 2;
+          }
+				// switch1
+				if (switchON1 == 0 && switchButton1 == 1) // switchOn holds last switch value 
+        {
+						inputSelected = 2;
+						switchON1 = 1;
+						isInput = 1;
+        } else if (switchON1 == 1 && switchButton1 == 0) 	//switchON
+          {
+             switchON1 = 0;
+             isInput = 1;
+             inputSelected = 2;
+          }
+				// switch2
+				if (switchON2 == 0 && switchButton2 == 1) // switchOn holds last switch value 
+        {
+						inputSelected = 2;
+						switchON2 = 1;
+						isInput = 1;
+        } else if (switchON2 == 1 && switchButton2 == 0) 	//switchON
+          {
+             switchON2 = 0;
+             isInput = 1;
+             inputSelected = 2;
+          }
+				// switch3
+				if (switchON3 == 0 && switchButton3 == 1) // switchOn holds last switch value 
+        {
+						inputSelected = 2;
+						switchON3 = 1;
+						isInput = 1;
+        } else if (switchON3 == 1 && switchButton3 == 0) 	//switchON
+          {
+             switchON3 = 0;
+             isInput = 1;
+             inputSelected = 2;
+          }
+				// switch4
+				if (switchON4 == 0 && switchButton4 == 1) // switchOn holds last switch value 
+        {
+						inputSelected = 2;
+						switchON4 = 1;
+						isInput = 1;
+        } else if (switchON4 == 1 && switchButton4 == 0) 	//switchON
+          {
+             switchON4 = 0;
              isInput = 1;
              inputSelected = 2;
           }
         		 	
+					
 				//Was a button pushed?
+			  // push button1
 				if (pushButton1 == 0)
+				{
+					inputSelected = 1;
+					isInput = 1;
+				}
+				// push button2
+				if (pushButton2 == 0)
+				{
+					inputSelected = 1;
+					isInput = 1;
+				}
+				// push button3
+				if (pushButton3 == 0)
 				{
 					inputSelected = 1;
 					isInput = 1;
