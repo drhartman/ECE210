@@ -1,3 +1,6 @@
+#include <stdlib.h> /* required for randomize() and random() */
+#include <time.h>
+
 //*****************************************************************************
 // TITLE:			LAB 8
 // 
@@ -38,6 +41,8 @@ void	RIT128x96x4Init(int freq);
 void    RIT128x96x4Clear(void); 
 void    RIT128x96x4StringDraw(const char* letter, int xx, int yy, int intensity);
 char* 	convert(int baudotCode);
+//int randomize(void);
+time_t time(time_t *);
 //*****************************************************************************
 //
 // Main Program:
@@ -64,6 +69,7 @@ main(void)
 	int loserMsg; //holds "you lose' message
 	
 	int dead;
+	int SEED;
 
 	// used to read current values
 	int potenValue0 = 0;
@@ -74,9 +80,14 @@ main(void)
 	int inputRequested = 0;
 	int inputSelected = 0;
 	int ATWCCW = 1; // 0 = false, 1 = true
-	int switchON = 1; // 0 = false, 1= true
+	int switchON = 0; // 0 = false, 1= true
   int number = 0;
   int SwitchNum = 4;
+	
+	// timer variables
+	int waitTimer = 0;
+	int waitCounter = 0;
+	int waitLimit;
 
 
 	//Initializing the LEDBAR, RGB LED, DIPSwitches and Pushbuttons, and a wait timer
@@ -119,21 +130,21 @@ main(void)
 
 	// code for 'Switch It'
 	switchItCodes[0] = 5;	// S
-	switchItCodes[1] = 19;  // W
-	switchItCodes[2] = 6;   // I
+	switchItCodes[1] = 19;     // W
+	switchItCodes[2] = 6;     // I
 	switchItCodes[3] = 16;	// T
-	switchItCodes[4] = 14;  // C
-	switchItCodes[5] = 20;  // H
+	switchItCodes[4] = 14;     // C
+	switchItCodes[5] = 20;     // H
 	switchItCodes[6] = 4;	//
-	switchItCodes[7] = 6;	// I
- 	switchItCodes[8] = 16;	// T
+  switchItCodes[7] = 6;	// I
+  switchItCodes[8] = 16;	// T
 	
 	// code for 'You Lose'
 	loserCodes[0] = 21;	//Y
 	loserCodes[1] = 24;	//O
 	loserCodes[2] = 7;	//U
 	loserCodes[3] = 4;	//
-	loserCodes[4] = 18;     //L
+	loserCodes[4] = 18; //L
 	loserCodes[5] = 24;	//O
 	loserCodes[6] = 5;	//S
 	loserCodes[7] = 1;	//E
@@ -154,12 +165,19 @@ main(void)
 	yy = 0;
 
 	//(unsigned int) srand(time(NULL)); // set new seed?
-
+	SEED = 42;//time(NULL);
+	
+	srand(SEED);
+	//srand(time(NULL));
+	
+	sysTickWait1mS(1000);
+	
   while(1){
 
 		// Assign inputRequest - 1: button,  2: switch, 3: knob 
 		int randomNum = rand() % 3;	// generates a number between 0-3
 
+		/*
 		if (randomNum <= 1)
 		{
 			inputRequested = 1;	// button
@@ -172,7 +190,24 @@ main(void)
 		{
 			inputRequested = 3;	// knob
 		}
+*/
+		
+		switch(randomNum)
+{
+   case 0:
+      inputRequested = 1;	// button
+      break;
 
+   case 1:
+      inputRequested = 2;	// switch
+      break;
+
+   case 2:
+      inputRequested = 3;	// knob
+      break;
+
+}
+		
 		if (inputRequested == 1)
 		{
 			//Display 'Push it'
@@ -199,45 +234,39 @@ main(void)
 			}
 		}
 
-      
+    // Set timeout
+		waitLimit = 50;
+		LEDBAROutput(31);
+		
 			while (isInput == 0)	// loop until an input is detected
 			{
 
 				// record values of inputs here
 				potenValue0 = readPotentiometer0();				  // knob value
 				pushButton1 = read_PBSwitchNum(1);					// push button
-				switchButton1 = read_SwitchNum(SwitchNum);
-
+				switchButton1 = read_SwitchNum(SwitchNum);  // switch number
 				// Did the knob change?
-				if (ATWCCW == 1)
+				if (ATWCCW == 1 && (potenValue0 >= 500))
 				{
-					if (potenValue0 >= 500)
-					{
 						inputSelected = 3;
 						ATWCCW = 0;
 						isInput = 1;
-					}
 				}
-				else	//ATWCW
+				else if (ATWCCW == 0 && (potenValue0 <= 500)) //ATWCW
 				{
-					if (potenValue0 <= 500)
-					{
-						isInput = 1;
-						inputSelected = 3;
-						ATWCCW = 1;
-					}
+					isInput = 1;
+					inputSelected = 3;
+					ATWCCW = 1;
 				}
+				
 
 				//Did a switch change?
-				if (switchON == 0) // switchOn holds last switch value 
+				if (switchON == 0 && switchButton1 == 1) // switchOn holds last switch value 
         {
-          if (switchButton1 == 1)
-					{
 						inputSelected = 2;
 						switchON = 1;
 						isInput = 1;
-					}
-        } else if (switchButton1 == 0) 	//switchON
+        } else if (switchON == 1 && switchButton1 == 0) 	//switchON
           {
              switchON = 0;
              isInput = 1;
@@ -250,8 +279,59 @@ main(void)
 					inputSelected = 1;
 					isInput = 1;
 				}
+				
+				//Are we over the time limit?
+				if(waitTimer > waitLimit){
+					//p1Dead = 1;    //Board Specific!!
+					isInput = 1;
+					inputSelected = 0;
+				}
+
+				waitTimer = waitTimer + 1;
+				sysTickWait1mS(100);
+				//LEDBAROutput();
+				
+				
+				// display time on LEDBAR
+				/* //not sure if case statement would work for this. 
+				//Need to figure out how to adjust time display as time speeds up
+				switch(randomNum)
+				{
+					case 0:
+						LEDBAR_TurnOn(number);
+						break;
+
+					case 1:
+						LEDBAR_TurnOn(number);
+						break;
+
+					case 2:
+						LEDBAR_TurnOn(number);
+						break;
+}
+				*/
+				
+			  if ((10 < waitTimer) && (waitTimer <= 20))
+				{
+					LEDBAR_TurnOff(4);
+				} else if ((20 < waitTimer) && (waitTimer <= 30))
+				{
+					LEDBAR_TurnOff(3);
+				} else if ((30 < waitTimer) && (waitTimer <= 40))
+				{
+					LEDBAR_TurnOff(2);
+				} else if ((40 < waitTimer) && (waitTimer <= 50))
+				{
+					LEDBAR_TurnOff(1);
+				}
 
 			}//end while(no input)
+			waitTimer = 0;
+			LEDBAR_TurnOff(0);
+			LEDBAR_TurnOff(1);
+			LEDBAR_TurnOff(2);
+			LEDBAR_TurnOff(3);
+			LEDBAR_TurnOff(4);
 
 
 			// Was the input correct?
@@ -294,11 +374,14 @@ main(void)
 					RIT128x96x4Clear();
 				
 					dead = 1; ////THIS VALUE IS BOARD SPECIFIC
-					for(ii = 0 ; ii<8 ; ii++)
+					for(ii = 0 ; ii < 8 ; ii++)
 					{
 						loserMsg =  loserCodes[ii];
 						RIT128x96x4StringDraw(convert(loserMsg), xx + 6*ii,yy,15);
 					}
+					sysTickWait1mS(1000);
+					//Clear messages on the screen
+					RIT128x96x4Clear();
 			}
 
 			//RESET VALUES
