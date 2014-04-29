@@ -179,8 +179,7 @@ main(void)
 	yy = 0;
 
 	//(unsigned int) srand(time(NULL)); // set new seed?
-	SEED = 42;//time(NULL);
-	rand = 0;
+	SEED = rand()%4242;//time(NULL);
 	
 	srand(SEED);
 	waitLimit = 30;
