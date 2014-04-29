@@ -180,9 +180,9 @@ main(void)
 
 	//(unsigned int) srand(time(NULL)); // set new seed?
 	SEED = 42;//time(NULL);
+	rand = 0;
 	
 	srand(SEED);
-	//srand(time(NULL));
 	waitLimit = 30;
 	sysTickWait1mS(1000);
 	
