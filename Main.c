@@ -59,7 +59,6 @@ main(void)
 	int loserCodes[10];
 
 	int ii;   					//for counter variable
-	int jj;
 	int xx;							//x axis string position
 	int yy;							//y axis string position
 
@@ -69,7 +68,8 @@ main(void)
 	int switchIt; // holds 'Switch it' message
 	int loserMsg; //holds "you lose' message
 	
-	int dead;
+	int dead=0;
+	int turn = 0;
 	int SEED;
 
 	// used to read current values
@@ -193,8 +193,7 @@ main(void)
 	
 	
 
-	
-  for(jj = 0 ; jj < 5; jj++){
+	while(dead == 0 && turn < 5){
 
 		// Assign inputRequest - 1: button,  2: switch, 3: knob 
 		int randomNum = rand() % 3;	// generates a number between 0-3
@@ -391,7 +390,7 @@ main(void)
 				
 				//Are we over the time limit?
 				if(waitTimer > waitLimit){
-					//p1Dead = 1;    //Board Specific!!
+					dead = 1;    //Board Specific!!
 					isInput = 1;
 					inputSelected = 0;
 				}
@@ -475,10 +474,11 @@ main(void)
 			//RESET VALUES
 			isInput = 0;
 			inputSelected = 0;
-
-			}//end for(5 turns)
+			turn = turn +1;
+			}//end while(not dead && less than 5 turns)
 		turnOn('B');
 		waitLimit = waitLimit*.9;
+		turn = 0;
 			
 			
 			
