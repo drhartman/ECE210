@@ -549,6 +549,7 @@ main(void)
 		turnOff('B');
 		waitLimit = waitLimit*.9;
 		numTries = 0;
+		turn = 0;
 			
 			/************************************************/
 			
