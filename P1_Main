@@ -1,3 +1,4 @@
+//P1 -- Three Player Mode
 #include <stdlib.h>		/* required for randomize() and random() */
 #include <time.h>
 
@@ -81,6 +82,7 @@ main(void)
 	int p2Dead = 0;
 	int p3Dead = 0;
 	int p4Dead = 0;
+	
 //	int p1DeadPrev;		//Contains the previous value of p1Dead
 //	int p2DeadPrev;		//Contains prev value of p2Dead
 //	int p3DeadPrev;		//Contains prev value of p3Dead
@@ -242,7 +244,7 @@ main(void)
 		countDead = p1Dead + p2Dead + p3Dead + p4Dead;
 
 		
-		if(turn == 1 && countDead < 1){																					//turn is board specific
+		if(turn == 1 && countDead < 2){																					//turn is board specific
 	
 			turnOn('G');
 			sysTickWait1mS(150);
@@ -458,7 +460,8 @@ main(void)
 				
 				//Are we over the time limit?
 				if(waitTimer > waitLimit){
-					p1Dead = 1;   																															 //Board Specific!!
+					
+					p1Dead = 1;					//Board Specific!!
 					isInput = 1;
 					inputSelected = 0;
 				}
@@ -527,8 +530,8 @@ main(void)
 				
 				  //Clear messages on the screen
 					RIT128x96x4Clear();
-				
-					p1Dead = 1; 																																////THIS VALUE IS BOARD SPECIFIC
+					
+					p1Dead = 1;						////THIS VALUE IS BOARD SPECIFIC
 					for(ii = 0 ; ii < 8 ; ii++)
 					{
 						loserMsg =  loserCodes[ii];
@@ -567,7 +570,15 @@ main(void)
 			Xbee_SendArray(sendMessage, 5);
 				
 		}
-		else if (countDead >= 1) {
+		else if (countDead >= 2) {
+			sendMessage[0] = (char) (p1Dead + 48);
+			sendMessage[1] = (char) (p2Dead + 48);
+			sendMessage[2] = (char) (p3Dead + 48);
+			sendMessage[3] = (char) (p4Dead + 48);
+			sendMessage[4] = (char) (2 + 48);																					//BOARD SPECIFIC!!!!
+	
+			Xbee_SendArray(sendMessage, 5);
+			
 				if (!p1Dead){
 						//Display "P1 Wins!"
 							Display(13);
