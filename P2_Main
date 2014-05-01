@@ -1,3 +1,4 @@
+//P1-- two player mode
 #include <stdlib.h>		/* required for randomize() and random() */
 #include <time.h>
 
@@ -206,7 +207,7 @@ main(void)
 	sysTickWait1mS(150);
 
   /* Board Specific */
-	Xbee_ConfigureAddresses(p3Add, p2Add);														
+	Xbee_ConfigureAddresses(p1Add, p2Add);														
 	RIT128x96x4Clear();
 	
 	//LED Sequence lets us know we have configured the Xbee 
@@ -226,10 +227,14 @@ main(void)
 	sendMessage[4] = (char) (1 + 48);
 	
 	Xbee_SendArray(sendMessage, 5);
+	//errorCode = 0x5A5;
 		
 	/* Main Part of the Program starts here */
 	while (1){
-		errorCode =  Xbee_ReceiveArray(messageReceived, 5);
+		
+		//while(errorCode == 0x5A5){
+			errorCode =  Xbee_ReceiveArray(messageReceived, 5);
+		//}
 		
 		if (errorCode != 0x5A5){
 			
@@ -241,9 +246,10 @@ main(void)
 		}
 		
 		countDead = p1Dead + p2Dead + p3Dead + p4Dead;
+		//errorCode = 0x5A5;
 		
 		// board specific
-		if(turn == 2 && countDead < 3){																					
+		if(turn == 2 && countDead < 1){																					
 	
 			turnOn('G');
 			sysTickWait1mS(150);
@@ -564,12 +570,12 @@ main(void)
 			sendMessage[1] = (char) (p2Dead + 48);
 			sendMessage[2] = (char) (p3Dead + 48);
 			sendMessage[3] = (char) (p4Dead + 48);
-			sendMessage[4] = (char) (3 + 48);																					//BOARD SPECIFIC!!!!
+			sendMessage[4] = (char) (1 + 48);																					//BOARD SPECIFIC!!!!
 	
-			Xbee_SendArray(sendMessage, 5);//Send Array to next board
+			Xbee_SendArray(sendMessage, 5);
 				
 		}
-		else if (countDead >= 3) {
+		else if (countDead >= 1) {
 				if (!p1Dead){
 						//Display "P1 Wins!"
 							Display(13);
