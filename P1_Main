@@ -1,3 +1,5 @@
+//P1-- two player mode
+
 #include <stdlib.h>		/* required for randomize() and random() */
 #include <time.h>
 
