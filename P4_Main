@@ -205,7 +205,7 @@ main(void)
 	turnOff('R');
 	sysTickWait1mS(150);
 
-	Xbee_ConfigureAddresses(p2Add, p1Add);														//Board Specific
+	Xbee_ConfigureAddresses(p1Add, p4Add);														//Board Specific
 	RIT128x96x4Clear();
 	
 	//LED Sequence lets us know we have configured the Xbee 
@@ -241,7 +241,7 @@ main(void)
 		
 		countDead = p1Dead + p2Dead + p3Dead + p4Dead;
 		
-		if(turn == 1 && countDead < 3){																					//turn is board specific
+		if(turn == 4 && countDead < 3){																					//turn is board specific
 	
 			turnOn('G');
 			sysTickWait1mS(150);
@@ -260,7 +260,7 @@ main(void)
 			
 			/*******************************************************************/
 			
-			while(p1Dead == 0 && numTries < 5){																			//Board specific
+			while(p4Dead == 0 && numTries < 5){																			//Board specific
 
 		// Assign inputRequest - 1: button,  2: switch, 3: knob 
 		int randomNum = rand() % 3;	// generates a number between 0-3
@@ -457,7 +457,7 @@ main(void)
 				
 				//Are we over the time limit?
 				if(waitTimer > waitLimit){
-					p1Dead = 1;   																															 //Board Specific!!
+					p4Dead = 1;   																															 //Board Specific!!
 					isInput = 1;
 					inputSelected = 0;
 				}
@@ -527,7 +527,7 @@ main(void)
 				  //Clear messages on the screen
 					RIT128x96x4Clear();
 				
-					p1Dead = 1; 																																////THIS VALUE IS BOARD SPECIFIC
+					p4Dead = 1; 																																////THIS VALUE IS BOARD SPECIFIC
 					for(ii = 0 ; ii < 8 ; ii++)
 					{
 						loserMsg =  loserCodes[ii];
@@ -560,7 +560,7 @@ main(void)
 			sendMessage[1] = (char) (p2Dead + 48);
 			sendMessage[2] = (char) (p3Dead + 48);
 			sendMessage[3] = (char) (p4Dead + 48);
-			sendMessage[4] = (char) (2 + 48);																					//BOARD SPECIFIC!!!!
+			sendMessage[4] = (char) (1 + 48);																					//BOARD SPECIFIC!!!!
 	
 			Xbee_SendArray(sendMessage, 5);//Send Array to next board
 				
