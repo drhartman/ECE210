@@ -2,17 +2,17 @@
 #include <time.h>
 
 //*****************************************************************************
-// TITLE:			LAB 8
+// TITLE:		BOP IT, Final Project
 // 
-// NAME:		    <Your Name Here>
-// LAB SECTION:		<301, 302, 303, 304, 305, or 306>
-// LAB DAY:			<Lab Day>
+// NAME:		David Hartman, Ruihao Zhu, Shu Wen Loo, Jim Choncholas
+// LAB SECTION:		305
+// LAB DAY:		Monday, Evening
 //
-// CLASS:			ECE 210
-// DATE: 			FALL 2014
-// 
-// DESCRIPTION:		<Insert a short description of what you are working on in 
-//                   in this lab>
+// CLASS:		ECE 210
+// DATE: 		SPRING 2014
+//
+// DESCRIPTION:		Mimics the popular game 'Bop It' by using the boards
+//			buttons, knobs, and switches.
 //*****************************************************************************
 /* Initialization Functions */
 void	LEDBARInit(void);
